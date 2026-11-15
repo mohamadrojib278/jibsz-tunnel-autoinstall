@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Jibsz Tunneling / J1BTNL — Panel V2</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Top Bar Ringkas dengan Tombol Menu di Kiri Atas (Tanpa Tombol Wizard) -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle-btn" onclick="toggleDrawer()" aria-label="Buka Menu">
+        ☰
+      </button>
+      <div class="topbar-brand">
+        <h1 id="active-menu-title">Dashboard & Network Usage</h1>
+        <span>Jibsz Tunneling V2 • {{ domain }}</span>
+      </div>
+    </div>
+    <div>
+      <span class="badge badge-online">{{ install_mode | upper }}</span>
+    </div>
+  </header>
+
+  <!-- Backdrop & Slide-Out Menu Drawer Kiri Atas -->
+  <div id="drawer-backdrop" class="drawer-backdrop" onclick="toggleDrawer(false)"></div>
+  <aside id="sidebar-drawer" class="sidebar-drawer">
+    <div class="drawer-header">
+      <div class="drawer-logo">
+        <div class="drawer-logo-badge">J1B</div>
+        <div>
+          <strong style="font-size:0.9rem;color:#fff;">JIBSZ TUNNEL V2</strong>
+          <div style="font-size:0.7rem;color:#94a3b8;">Public Panel • CLI Delete</div>
+        </div>
+      </div>
+      <button class="drawer-close-btn" onclick="toggleDrawer(false)">✕</button>
+    </div>
+
+    <nav class="drawer-nav">
+      <button id="nav-dashboard" class="drawer-item active" onclick="switchMenuV2('dashboard', 'Dashboard & Network Usage')">
+        <span>📊</span>
+        <span>Dashboard</span>
+      </button>
+      <button id="nav-create" class="drawer-item" onclick="switchMenuV2('create', 'Buat Akun Tunneling')">
+        <span>➕</span>
+        <span>Buat Akun</span>
+      </button>
+      <button id="nav-logs" class="drawer-item" onclick="switchMenuV2('logs', 'Log Server Real-Time')">
+        <span>📜</span>
+        <span>Log Server</span>
+      </button>
+      <button id="nav-system" class="drawer-item" onclick="switchMenuV2('system', 'Resource & Sistem Informasi')">
+        <span>🖥️</span>
+        <span>Sistem</span>
+      </button>
+      <button id="nav-settings" class="drawer-item" onclick="switchMenuV2('settings', 'Setting Banner SSH & Backup')">
+        <span>⚙️</span>
+        <span>Setting & Backup</span>
+      </button>
+    </nav>
+
+    <div class="drawer-footer">
+      Credit Telegram: <a href="https://t.me/admj1btnl" target="_blank">@admj1btnl</a><br />
+      GitHub: <a href="https://github.com/mohamadrojib278" target="_blank">mohamadrojib278</a>
+    </div>
+  </aside>
+
+  <!-- Kontainer Utama yang Ringkas -->
+  <main class="container">
+    <!-- ======================================================================
+         1. MENU DASHBOARD: USER STATISTIK & SERVER NETWORK USAGE
+         ====================================================================== -->
+    <section id="pane-dashboard" class="tab-pane" style="display:block;">
+      <!-- Server Network Usage -->
+      <div class="glass-card">
+        <div class="card-title">
+          <span>🌐 Server Network Usage (vnStat & Mode)</span>
+          <span class="badge badge-online" id="net-mode-badge">{{ install_mode }}</span>
+        </div>
+        <div class="grid-4">
+          <div class="stat-box">
+            <div class="stat-label">Total Traffic</div>
+            <div class="stat-value" id="net-bw-total">0.00 GB</div>
+            <div class="stat-sub">Akumulasi Bandwidth</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Download (RX)</div>
+            <div class="stat-value" id="net-bw-dl">0.00 GB</div>
+            <div class="stat-sub">Trafik Masuk</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Upload (TX)</div>
+            <div class="stat-value" id="net-bw-ul">0.00 GB</div>
+            <div class="stat-sub">Trafik Keluar</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Host / IP Public</div>
+            <div class="stat-value" id="net-domain" style="font-size:0.9rem;">{{ domain }}</div>
+            <div class="stat-sub" id="net-pub-ip">{{ public_ip }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Statistik Ringkas -->
+      <div class="glass-card">
+        <div class="card-title">
+          <span>👥 User Statistik per Protokol</span>
+          <div>
+            <span class="badge badge-success" id="stat-total-acc">0 Akun</span>
+            <span class="badge badge-online" id="stat-online-ip">0 IP Online</span>
+          </div>
+        </div>
+        <div class="grid-4" style="margin-bottom:12px;">
+          <div class="stat-box">
+            <div class="stat-label">SSH / WS</div>
+            <div class="stat-value" id="cnt-ssh">0</div>
+            <div class="stat-sub">/ssh-ws</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">VMess</div>
+            <div class="stat-value" id="cnt-vmess">0</div>
+            <div class="stat-sub">/vmess</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">VLESS</div>
+            <div class="stat-value" id="cnt-vless">0</div>
+            <div class="stat-sub">/vless</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Trojan</div>
+            <div class="stat-value" id="cnt-trojan">0</div>
+            <div class="stat-sub">/trojan</div>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="mobile-stack">
+            <thead>
+              <tr>
+                <th>User & Protokol</th>
+                <th>Status</th>
+                <th>Pemakaian Kuota</th>
+                <th>IP Client Aktif</th>
+                <th>Expired</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-users-tbody">
+              <!-- Diisi oleh loadDashboardUserStats() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         2. MENU BUAT AKUN (SIMPLE & RINGKAS, HAPUS HANYA LEWAT CLI)
+         ====================================================================== -->
+    <section id="pane-create" class="tab-pane" style="display:none;">
+      <div class="glass-card">
+        <div class="card-title">
+          <span>➕ Buat Akun Baru (Simple Form)</span>
+          <span class="badge badge-cli-only">🔒 Hapus Akun Hanya via CLI</span>
+        </div>
+        <form onsubmit="submitCreateAccount(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="acc-protocol">Protokol:</label>
+              <select id="acc-protocol" class="form-control">
+                <option value="ssh">SSH WebSocket</option>
+                <option value="vless">VLESS (WS & gRPC)</option>
+                <option value="vmess">VMess (WS & gRPC)</option>
+                <option value="trojan">Trojan (WS & gRPC)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="acc-username">Username:</label>
+              <input type="text" id="acc-username" class="form-control" placeholder="user01" required />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="acc-secret">Password / UUID (Opsional):</label>
+              <input type="text" id="acc-secret" class="form-control" placeholder="Otomatis jika dikosongkan" />
+            </div>
+            <div class="form-group">
+              <label for="acc-duration-mode">Masa Aktif & Durasi:</label>
+              <div style="display:flex;gap:6px;">
+                <select id="acc-duration-mode" class="form-control" style="flex:1.2;">
+                  <option value="days">Hari</option>
+                  <option value="trial_hours">Trial (Jam)</option>
+                  <option value="trial_minutes">Trial (Menit)</option>
+                </select>
+                <input type="number" id="acc-duration-val" class="form-control" style="flex:0.8;" value="30" min="1" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="acc-ip-limit">Limit IP:</label>
+              <input type="number" id="acc-ip-limit" class="form-control" value="2" min="1" required />
+            </div>
+            <div class="form-group">
+              <label for="acc-quota-gb">Kuota (GB):</label>
+              <input type="number" step="0.5" id="acc-quota-gb" class="form-control" value="50" min="0" required />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;">
+            🚀 Buat Akun Sekarang
+          </button>
+        </form>
+      </div>
+
+      <!-- Hasil Akun Baru -->
+      <div id="created-account-output" class="glass-card" style="display:none;"></div>
+
+      <!-- Daftar Akun Ringkas -->
+      <div class="glass-card">
+        <div class="card-title">
+          <span>📋 Daftar Akun Terdaftar</span>
+          <button class="btn btn-primary btn-sm" onclick="loadAccountsSimpleList()">🔄 Refresh</button>
+        </div>
+        <div class="table-responsive">
+          <table class="mobile-stack">
+            <thead>
+              <tr>
+                <th>Akun</th>
+                <th>Expired</th>
+                <th>Limit</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="crud-accounts-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         3. MENU LOG SERVER
+         ====================================================================== -->
+    <section id="pane-logs" class="tab-pane" style="display:none;">
+      <div class="glass-card">
+        <div class="card-title">
+          <span>📜 Log Server Real-Time</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-primary btn-sm" onclick="loadServerLogs()">🔄 Refresh</button>
+            <button class="btn btn-warning btn-sm" onclick="clearServerLogs()">🧹 Clear Log</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="log-source-select">Pilih Sumber Log:</label>
+          <select id="log-source-select" class="form-control" onchange="loadServerLogs()">
+            <option value="xray_access">Xray Access Log (Koneksi VMess/VLESS/Trojan)</option>
+            <option value="nginx_access">Nginx Reverse Proxy Log (CF-Connecting-IP)</option>
+            <option value="ssh_ws">SSH WebSocket Proxy Log</option>
+            <option value="cloudflared">Cloudflare Tunnel (cloudflared) Log</option>
+            <option value="monitor">Daemon Monitor IP & Auto-Lock Log</option>
+            <option value="xray_error">Xray Error Log</option>
+          </select>
+        </div>
+        <pre id="server-log-box" class="terminal-log">Memuat log server...</pre>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         4. MENU SISTEM (RESOURCE USAGE CPU/RAM/DISK/UPTIME & SYSTEM INFO)
+         ====================================================================== -->
+    <section id="pane-system" class="tab-pane" style="display:none;">
+      <!-- Resource Usage -->
+      <div class="glass-card">
+        <div class="card-title">
+          <span>⚡ Resource Usage (CPU, Memory, Disk & Uptime)</span>
+          <button class="btn btn-primary btn-sm" onclick="loadOverviewAndSystem()">🔄 Refresh</button>
+        </div>
+        <div class="grid-2">
+          <div class="stat-box">
+            <div class="stat-label">CPU Usage</div>
+            <div class="stat-value" id="sys-cpu-val">0%</div>
+            <div class="progress-track"><div id="sys-cpu-bar" class="progress-fill" style="width:0%"></div></div>
+            <div class="stat-sub" id="sys-load-sub">Load Avg: -</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Memory (RAM)</div>
+            <div class="stat-value" id="sys-ram-val">0 / 0 MB</div>
+            <div class="progress-track"><div id="sys-ram-bar" class="progress-fill" style="width:0%"></div></div>
+            <div class="stat-sub">Memori Fisik Aktif</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Storage (Disk)</div>
+            <div class="stat-value" id="sys-disk-val">0 / 0 GB</div>
+            <div class="progress-track"><div id="sys-disk-bar" class="progress-fill" style="width:0%"></div></div>
+            <div class="stat-sub">Partisi Utama (/)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">System Uptime</div>
+            <div class="stat-value" id="sys-uptime-val">-</div>
+            <div class="stat-sub">Waktu Aktif Server</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Informasi & Service Daemon -->
+      <div class="grid-2">
+        <div class="glass-card">
+          <div class="card-title">
+            <span>ℹ️ System Informasi</span>
+          </div>
+          <table class="mobile-stack">
+            <tbody>
+              <tr><td data-label="OS"><span id="sys-os-val">-</span></td></tr>
+              <tr><td data-label="Kernel"><code id="sys-kernel-val">-</code></td></tr>
+              <tr><td data-label="Hostname"><code id="sys-host-val">-</code></td></tr>
+              <tr><td data-label="Endpoint"><code id="sys-domain-val">-</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-title">
+            <span>🔧 Status Daemon Service</span>
+          </div>
+          <table class="mobile-stack">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="service-status-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         5. MENU SETTING (BANNER SSH & BACKUP / RESTORE)
+         ====================================================================== -->
+    <section id="pane-settings" class="tab-pane" style="display:none;">
+      <div class="grid-2">
+        <!-- Setting Banner SSH -->
+        <div class="glass-card">
+          <div class="card-title">
+            <span>🎨 Setting Banner SSH (/etc/jibsz/banner.txt)</span>
+          </div>
+          <div class="form-group">
+            <label for="ssh-banner-textarea">Kode HTML / Teks Banner SSH & Dropbear:</label>
+            <textarea id="ssh-banner-textarea" class="form-control" rows="7" style="font-family:monospace;font-size:0.78rem;"></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="saveSshBanner()">
+            💾 Simpan & Terapkan Banner SSH
+          </button>
+        </div>
+
+        <!-- Backup & Restore -->
+        <div class="glass-card">
+          <div class="card-title">
+            <span>📦 Backup & Restore Akun / Konfigurasi</span>
+          </div>
+          <p style="font-size:0.78rem;color:#94a3b8;margin-bottom:10px;">
+            Cadangkan seluruh akun (SSH, VMess, VLESS, Trojan), database SQLite, dan banner ke arsip <code>.tar.gz</code>, atau pulihkan dari file backup.
+          </p>
+          <button class="btn btn-success" style="width:100%;margin-bottom:14px;" onclick="createNewBackup()">
+            ➕ Buat Backup Baru Sekarang
+          </button>
+
+          <form onsubmit="uploadAndRestoreBackup(event)" style="border-top:1px solid rgba(148,163,184,0.14);padding-top:12px;">
+            <div class="form-group">
+              <label for="restore-file-input">Upload & Restore File Backup (.tar.gz):</label>
+              <input type="file" id="restore-file-input" class="form-control" accept=".gz,.tar.gz" />
+            </div>
+            <button type="submit" class="btn btn-warning" style="width:100%;">
+              ♻️ Upload & Restore Backup
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Daftar File Backup Tersimpan di Server -->
+      <div class="glass-card">
+        <div class="card-title">
+          <span>🗂️ Daftar Arsip Backup Tersimpan (/root/jibsz-backups)</span>
+        </div>
+        <div class="table-responsive">
+          <table class="mobile-stack">
+            <thead>
+              <tr>
+                <th>Nama File</th>
+                <th>Ukuran</th>
+                <th>Tanggal</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="backup-list-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      loadOverviewAndSystem();
+      loadDashboardUserStats();
+      setInterval(() => {
+        const dashPane = document.getElementById("pane-dashboard");
+        const sysPane = document.getElementById("pane-system");
+        if (dashPane && dashPane.style.display !== "none") {
+          loadOverviewAndSystem();
+          loadDashboardUserStats();
+        } else if (sysPane && sysPane.style.display !== "none") {
+          loadOverviewAndSystem();
+        }
+      }, 6000);
+    });
+  </script>
+</body>
+</html>
