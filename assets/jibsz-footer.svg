@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 110" width="100%" height="110" role="img" aria-label="Jibsz Tunnels Animated Footer">
+  <defs>
+    <linearGradient id="fBg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#040711"/>
+      <stop offset="50%" stop-color="#0b132b"/>
+      <stop offset="100%" stop-color="#140c29"/>
+    </linearGradient>
+    <linearGradient id="fWave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.4"/>
+      <stop offset="50%" stop-color="#0ea5e9" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#00f2fe" stop-opacity="0.4"/>
+    </linearGradient>
+    <clipPath id="fClip"><rect x="0" y="0" width="1200" height="110" rx="14"/></clipPath>
+  </defs>
+  <style>
+    .fw { animation: fDrift 8s ease-in-out infinite alternate; }
+    .ft { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; letter-spacing: 2px; }
+    @keyframes fDrift { from { transform: translateX(0px); } to { transform: translateX(-80px); } }
+  </style>
+  <g clip-path="url(#fClip)">
+    <rect width="1200" height="110" fill="url(#fBg)"/>
+    <path class="fw" fill="url(#fWave)" d="M0,45 C260,95 540,5 820,55 C1020,90 1180,35 1320,50 L1320,110 L0,110 Z"/>
+    <text x="600" y="66" text-anchor="middle" font-size="16" fill="#f8fafc" class="ft">JIBSZ TUNNELS (J1BTNL) • TELEGRAM @admj1btnl • GITHUB mohamadrojib278</text>
+    <rect x="1" y="1" width="1198" height="108" rx="13" fill="none" stroke="#00f2fe" stroke-opacity="0.3" stroke-width="1.5"/>
+  </g>
+</svg>
